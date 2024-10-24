@@ -27,6 +27,7 @@ import { DefaultTheme } from 'styled-components'
 import { CollabProvider } from '../classes/collabProvider'
 import { clipboardParser } from '../clipboard'
 import { Dispatch } from '../commands'
+import { transformCopied } from '../lib/copy'
 import { FileAttachment, FileManagement } from '../lib/files'
 import { handleScrollToBibliographyItem } from '../lib/helpers'
 import { handlePaste, transformPasted } from '../lib/paste'
@@ -94,6 +95,7 @@ export const createEditorView = (
     handlePaste,
     clipboardParser,
     handleScrollToSelection: handleScrollToBibliographyItem,
+    transformCopied,
     handleClickOn: (view, pos, node, nodePos, event) => {
       // This to prevent changing editor selection when clicking on table cell context menu button
       if (
