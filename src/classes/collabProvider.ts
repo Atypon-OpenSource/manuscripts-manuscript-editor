@@ -18,7 +18,7 @@ import { Step } from 'prosemirror-transform'
 
 export abstract class CollabProvider {
   currentVersion: number
-  protected newStepsListener: () => void
+  protected newStepsListener: (steps?: Step[], clientIDs?: number[]) => void
   abstract sendSteps(
     version: number,
     steps: readonly Step[],

@@ -29,6 +29,7 @@ import {
   NodeSelection,
   Transaction,
 } from 'prosemirror-state'
+import { Step } from 'prosemirror-transform'
 import { EditorView } from 'prosemirror-view'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -54,28 +55,33 @@ export const useEditor = (externalProps: ExternalProps) => {
 
   // Receiving steps from backend
   if (collabProvider) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    collabProvider.onNewSteps(async () => {
+    collabProvider.onNewSteps(async (steps?: Step[], clientIDs?: number[]) => {
       if (state && view.current) {
-        const localVersion = getVersion(view.current.state)
-
-        const since = await collabProvider.stepsSince(localVersion)
-
-        if (since && since.version <= localVersion) {
-          return
-        }
-
-        if (since?.steps.length && since.clientIDs.length) {
+        if (steps && steps.length > 0 && clientIDs) {
           view.current.dispatch(
-            receiveTransaction(
-              // has to be called for the collab to increment version and drop buffered steps
-              view.current.state,
-              since?.steps,
-              since.clientIDs
-            )
+            receiveTransaction(view.current.state, steps, clientIDs)
           )
         } else {
-          console.warn('Inconsistent new steps event from the authority.')
+          // Since we moved the broadcast to the worker, we need the following logic to act as a fallback for local development
+          const localVersion = getVersion(view.current.state)
+
+          const since = await collabProvider.stepsSince(localVersion)
+
+          if (since && since.version <= localVersion) {
+            return
+          }
+
+          if (since?.steps.length && since.clientIDs.length) {
+            view.current.dispatch(
+              receiveTransaction(
+                view.current.state,
+                since.steps,
+                since.clientIDs
+              )
+            )
+          } else {
+            console.log('Inconsistent new steps from the authority.')
+          }
         }
       }
     })
