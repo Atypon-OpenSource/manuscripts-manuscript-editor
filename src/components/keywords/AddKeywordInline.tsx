@@ -190,9 +190,10 @@ export const AddKeywordInline: React.FC<{
         onChange={handleInputChange}
         onKeyDown={(e) => {
           e.stopPropagation()
-          if (e.key == 'Enter') {
+          if (e.key === 'Enter') {
+            e.preventDefault() // 🔹 Prevent focus loss
             handleAddKeyword()
-          } else if (e.key == 'Escape') {
+          } else if (e.key === 'Escape') {
             handleCancel()
           }
         }}
