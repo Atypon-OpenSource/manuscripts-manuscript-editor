@@ -102,7 +102,7 @@ export class LinkEditableView extends LinkView {
       this.node,
       this.getPos,
       this.view,
-      'link-editor'
+      ['link-editor']
     )
 
     this.props.popper.show(this.dom, this.popperContainer, 'bottom')

@@ -114,7 +114,7 @@ export class EmbedMediaView extends BlockView<Trackable<EmbedNode>> {
         this.node,
         this.getPos,
         this.view,
-        'embed-context-menu'
+        ['embed-context-menu']
       )
     )
   }

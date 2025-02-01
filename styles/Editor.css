@@ -257,15 +257,24 @@
   align-items: center;
   border-radius: 16px;
   border: 1px dashed #e2e2e2;
+  background-color: #fafafa;
   color: #6e6e6e;
   cursor: pointer;
   display: flex;
   justify-content: center;
   text-align: center;
   padding: 64px 32px;
+  max-width: 210px;
   min-height: 100px;
   white-space: normal;
+
+  font-size: 14px;
 }
+
+.ProseMirror .figure.placeholder a {
+  text-decoration: underline;
+}
+
 
 .ProseMirror .figure.placeholder.over {
   border-color: #bce7f6;
@@ -703,7 +712,7 @@
     .action-gutter {
     pointer-events: visible;
     opacity: 1;
-    z-index: 2;
+    /* z-index: 2; */
 }
 .ProseMirror .block-box_element:hover > .block-gutter {
   opacity: 1;

@@ -104,7 +104,7 @@ export class TableCellView extends BlockView<ManuscriptNode> {
           this.view.state.selection.$from.node(),
           this.getPos,
           this.view,
-          'table-cell-context-menu'
+          ['table-cell-context-menu']
         )
         contextMenuButton.classList.toggle('open-context-menu')
 

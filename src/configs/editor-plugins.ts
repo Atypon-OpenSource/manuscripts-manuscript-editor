@@ -35,6 +35,7 @@ import doi from '../plugins/doi'
 import editorProps from '../plugins/editor-props'
 import elements from '../plugins/elements'
 import footnotes from '../plugins/footnotes'
+import inspector_tabs from '../plugins/inspector-tabs'
 import objects from '../plugins/objects'
 import paragraphs from '../plugins/paragraphs'
 import persist from '../plugins/persist'
@@ -78,6 +79,7 @@ export default (props: EditorProps) => {
     doi(),
     section_category(props),
     cross_references(),
+    inspector_tabs(),
   ]
 
   if (props.collabProvider) {

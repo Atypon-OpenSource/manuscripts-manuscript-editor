@@ -46,7 +46,7 @@ export class KeywordGroupView extends BlockView<KeywordGroupNode> {
         this.node,
         this.getPos,
         this.view,
-        'keywords-editor'
+        ['keywords-editor']
       )
     }
 
