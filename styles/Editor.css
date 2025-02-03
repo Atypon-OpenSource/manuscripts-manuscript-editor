@@ -1018,7 +1018,7 @@
 .ProseMirror .footnote .delete-icon {
   visibility: hidden;
 }
-.ProseMirror .footnote.footnote-selected .delete-icon {
+.ProseMirror .footnote.footnote-selected:not(.deleted) .delete-icon {
   visibility: visible;
 }
 .ProseMirror .footnote .scroll-icon {

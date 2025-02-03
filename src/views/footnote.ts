@@ -167,10 +167,13 @@ export class FootnoteView extends BaseNodeView<Trackable<FootnoteNode>> {
       $pos,
       schema.nodes.footnotes_element
     )
+    tr.delete(pos, pos + this.node.nodeSize)
+
     if (element && getEffectiveChildCount(element.node) <= 1) {
-      tr.delete(element.pos, element.pos + element.node.nodeSize)
-    } else {
-      tr.delete(pos, pos + this.node.nodeSize)
+      tr.delete(
+        tr.mapping.map(element.pos),
+        tr.mapping.map(element.pos + element.node.nodeSize)
+      )
     }
   }
 }

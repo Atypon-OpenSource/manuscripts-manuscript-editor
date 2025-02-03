@@ -1,7 +1,7 @@
 {
   "name": "@manuscripts/body-editor",
   "description": "Prosemirror components for editing and viewing manuscripts",
-  "version": "2.7.31",
+  "version": "2.7.32-LEAN-4170-v0.0",
   "repository": "github:Atypon-OpenSource/manuscripts-body-editor",
   "license": "Apache-2.0",
   "main": "dist/cjs",
