@@ -87,6 +87,7 @@
 }
 
 .ProseMirror .figure-block {
+  width: 100%;
   border-color: #000 !important;
   border-style: none !important;
   border-width: 0pt !important;
@@ -105,9 +106,9 @@
 }
 
 .ProseMirror .figure-block > figure {
-  border-color: #000;
-  border-style: none;
-  border-width: 0pt;
+  width: 100%;
+  border: 1px solid #f2f2f2;
+  border-radius: 4px;
   position: relative;
   grid-column: 1/-1;
 }
@@ -149,6 +150,17 @@
 .ProseMirror .figure-block[id^='MPTable'] > figcaption {
   grid-row: 2 !important;
   text-align: center !important;
+}
+
+.ProseMirror .figure-block .position-menu {
+  position: absolute;
+  top: 4px;
+  left: calc( 100% + 4px );
+  z-index: 2;
+  cursor: pointer;
+}
+.ProseMirror .box-element .figure-block .position-menu {
+  left: calc( 100% + 20px );
 }
 
 .ProseMirror .block-container.block-box_element {
@@ -219,9 +231,9 @@
   padding: 0 0 15px;
 }
 .tools-panel {
-  width: 100%;
   position: absolute;
-  top: 0;
+  top: 12px;
+  right: 12px;
   z-index: 3;
 }
 

@@ -146,7 +146,7 @@ export class AwardView extends BlockView<Trackable<AwardNode>> {
         this.node,
         this.getPos,
         this.view,
-        'context-menu'
+        ['context-menu']
       ),
       'right-start',
       false
@@ -169,7 +169,7 @@ export class AwardView extends BlockView<Trackable<AwardNode>> {
       this.node,
       this.getPos,
       this.view,
-      'award-editor'
+      ['award-editor']
     )
     this.props.popper.show(this.dom, this.popperContainer, 'auto', false)
   }
@@ -187,7 +187,7 @@ export class AwardView extends BlockView<Trackable<AwardNode>> {
       this.node,
       this.getPos,
       this.view,
-      'award-editor'
+      ['award-editor']
     )
     this.props.popper.show(this.dom, this.popperContainer, 'auto', false)
   }

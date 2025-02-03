@@ -97,7 +97,7 @@ export class KeywordView
       this.node,
       this.getPos,
       this.view,
-      'keywords-delete'
+      ['keywords-delete']
     )
 
     if (this.dialog) {

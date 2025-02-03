@@ -107,20 +107,17 @@
   border-radius: 4px;
   box-shadow: 0 4px 9px 0 rgba(84, 83, 83, 0.3);
   font-size: 14px;
-  overflow: hidden;
-}
-
-.popper .menu .menu-section {
-  padding: 4px 0;
-}
-
-.popper .menu .menu-section:not(:last-child) {
-  border-bottom: 1px solid #e2e2e2;
+  min-width: 208px;
 }
 
 .popper .menu-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
   cursor: pointer;
-  padding: 8px 16px;
+  padding: 16px 8px;
 }
 .popper .menu-item[disabled] {
   cursor: default;
@@ -128,6 +125,7 @@
   pointer-events: none;
 }
 
+.popper .menu-item.selected,
 .popper .menu-item:hover {
   background: #f5fbfc;
 }
@@ -150,6 +148,11 @@
 .popper .context-menu {
   width: auto;
   top: -12px;
+  right: unset;
+}
+
+.popper .position-menu {
+  top: -15px;
 }
 
 .popper .conflict-dropdown {
@@ -245,4 +248,23 @@
   background: #fff;
   width: 368px;
   z-index: 10;
+}
+
+.popper .menu .context-submenu { 
+  position: relative;
+}
+.popper .menu .context-submenu-trigger { 
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.popper .menu .context-submenu .menu-section {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 25px;
+}
+.popper .menu .context-submenu .menu-section.show {
+  display: block;
 }

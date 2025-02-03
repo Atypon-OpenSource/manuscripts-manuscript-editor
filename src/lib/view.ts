@@ -20,6 +20,7 @@ import {
   schema,
 } from '@manuscripts/transform'
 import { Attrs } from 'prosemirror-model'
+import { NodeSelection } from 'prosemirror-state'
 import * as utils from 'prosemirror-utils'
 
 import { isHidden, sanitizeAttrsChange } from './track-changes-utils'
@@ -75,7 +76,10 @@ export const updateNodeAttrs = (
     // @ts-ignore attrs readonly - deleting from a copy
     delete copy.dataTracked
     const pos = child.pos
-    const tr = view.state.tr.setNodeMarkup(pos, undefined, copy)
+    const tr = view.state.tr
+    tr.setNodeMarkup(pos, undefined, copy).setSelection(
+      NodeSelection.create(tr.doc, pos)
+    )
     if (metaNodeTypes.includes(type)) {
       tr.setMeta(updateMetaNode, true)
     }

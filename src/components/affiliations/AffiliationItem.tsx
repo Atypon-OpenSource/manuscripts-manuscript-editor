@@ -115,7 +115,9 @@ export const AffiliationItem: React.FC<AffiliationContainerProps> = ({
         style={{ minWidth: 24, minHeight: 24 }}
       />
       <AffiliationBox>
-        <AffiliationName data-cy="affiliation-name">{affiliation.institution}</AffiliationName>
+        <AffiliationName data-cy="affiliation-name">
+          {affiliation.institution}
+        </AffiliationName>
         <AffiliationDetails>
           {affiliation.city && (
             <>

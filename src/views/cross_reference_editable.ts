@@ -52,7 +52,7 @@ export class CrossReferenceEditableView extends CrossReferenceView {
       this.node,
       this.getPos,
       this.view,
-      'cross-reference-editor'
+      ['cross-reference-editor']
     )
 
     this.props.popper.show(this.dom, this.popperContainer, 'auto')
