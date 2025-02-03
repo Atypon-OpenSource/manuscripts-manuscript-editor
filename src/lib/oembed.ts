@@ -88,27 +88,29 @@ const globToRegex = (glob: string) => {
   return new RegExp(`^${regex}$`)
 }
 
-export const getOEmbedHTML = async (oembedUrl: string, sourceLink: string) => {
+export const getOEmbedHTML = async (
+  url: string,
+  width: number,
+  height: number
+) => {
   try {
-    const response = await fetch(oembedUrl)
+    const oembedUrl = await getOEmbedUrl(url, width, height)
+    if (!oembedUrl) {
+      return
+    }
 
+    const response = await fetch(oembedUrl)
     if (response.status === 200) {
-      const oembed = await response.json()
-      return oembed.html || renderAlternativeHTML(oembed, sourceLink)
-    } else {
-      return undefined
+      const json = await response.json()
+      return json.html || renderAlternativeHTML(json)
     }
   } catch (e) {
-    return undefined
+    return
   }
 }
 
-const renderAlternativeHTML = (oembed: ProviderJson, sourceLink: string) => {
+const renderAlternativeHTML = (oembed: ProviderJson) => {
   if (oembed.type === 'photo') {
     return `<img src="${oembed.url}">`
   }
-
-  return `<a href="${sourceLink}" target="_blank">${
-    oembed.title || 'Media link'
-  }</a>`
 }

@@ -23,7 +23,7 @@ import {
   openEmbedDialog,
 } from '../components/toolbar/InsertEmbedDialog'
 import { openDeleteEmbedDialog } from '../components/views/DeleteEmbedDialog'
-import { getOEmbedHTML, getOEmbedUrl } from '../lib/oembed'
+import { getOEmbedHTML } from '../lib/oembed'
 import { Trackable } from '../types'
 import BlockView from './block_view'
 import { createNodeView } from './creators'
@@ -38,7 +38,6 @@ export class EmbedMediaView extends BlockView<Trackable<EmbedNode>> {
   public createElement = () => {
     this.container = document.createElement('div')
     this.container.classList.add('block')
-    this.container.setAttribute('id', this.node.attrs.id)
     this.dom.appendChild(this.container)
 
     this.contentDOM = document.createElement('div')
@@ -66,15 +65,12 @@ export class EmbedMediaView extends BlockView<Trackable<EmbedNode>> {
       this.container.prepend(preview)
     }
 
-    const oEmbedUrl = await getOEmbedUrl(this.href, 643, 363)
-    if (oEmbedUrl) {
-      const oembedHTML = await getOEmbedHTML(oEmbedUrl, this.href)
-      if (oembedHTML) {
-        preview.innerHTML = oembedHTML
-        return
-      }
+    const html = await getOEmbedHTML(this.href, 643, 363)
+    if (html) {
+      preview.innerHTML = html
+    } else {
+      this.showUnavailableMessage(preview)
     }
-    this.showUnavailableMessage(preview)
   }
 
   private buildContextMenu = (preview: HTMLElement) => {
@@ -100,7 +96,7 @@ export class EmbedMediaView extends BlockView<Trackable<EmbedNode>> {
         },
         {
           label: 'Edit',
-          action: () => openEmbedDialog(this.view, 'Update', this.getPos()),
+          action: () => openEmbedDialog(this.view, this.getPos()),
           icon: 'Edit',
         },
       ],

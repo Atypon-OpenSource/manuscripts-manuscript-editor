@@ -26,14 +26,14 @@ import {
   TextArea,
 } from '@manuscripts/style-guide'
 import { ManuscriptEditorState } from '@manuscripts/transform'
-import { debounce } from 'lodash'
 import { EditorView } from 'prosemirror-view'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { Dispatch, insertEmbed } from '../../commands'
-import { getOEmbedHTML, getOEmbedUrl } from '../../lib/oembed'
+import { getOEmbedHTML } from '../../lib/oembed'
 import { allowedHref } from '../../lib/url'
+import { useDoWithDebounce } from '../../lib/use-do-with-debounce'
 import { getEditorProps } from '../../plugins/editor-props'
 import ReactSubView from '../../views/ReactSubView'
 import { FieldHeading, Open } from '../views/LinkForm'
@@ -66,59 +66,47 @@ const PreviewContainer = styled.div`
 
 export type InsertEmbedDialogProps = {
   state: ManuscriptEditorState
-  dispatch?: Dispatch
-  operation: 'Insert' | 'Update'
+  dispatch: Dispatch
   pos?: number
 }
 
 export const InsertEmbedDialog: React.FC<InsertEmbedDialogProps> = ({
   state,
   dispatch,
-  operation,
   pos,
 }) => {
-  const nodeAttr = pos ? state.doc.nodeAt(pos)?.attrs : undefined
+  const attrs = pos ? state.doc.nodeAt(pos)?.attrs : undefined
   const [isOpen, setOpen] = useState(true)
-  const [url, setUrl] = useState<string | undefined>(
-    nodeAttr?.href || undefined
-  )
-  const [oembedHTML, setOEmbedHTML] = useState<string | undefined>(undefined)
+  const [url, setUrl] = useState<string>(attrs?.href)
+  const [oembedHTML, setOEmbedHTML] = useState<string>()
 
-  const action = () => {
-    if (operation === 'Insert') {
+  const debounce = useDoWithDebounce()
+
+  const handleSave = () => {
+    if (!pos) {
       insertEmbed(state, dispatch, { href: url })
     } else {
-      dispatch &&
-        pos &&
-        dispatch(
-          state.tr.setNodeMarkup(pos, undefined, {
-            ...state.doc.nodeAt(pos)?.attrs,
-            href: url,
-          })
-        )
+      const tr = state.tr.setNodeAttribute(pos, 'href', url)
+      dispatch(tr)
     }
     setOpen(false)
   }
 
-  useEffect(() => {
-    url && updateEmbedHTML(url)
-  }, [pos])
+  useEffect(
+    () => {
+      debounce(async () => {
+        const html = await getOEmbedHTML(url, 368, 217)
+        setOEmbedHTML(html)
+      })
+    },
+    [url] // eslint-disable-line react-hooks/exhaustive-deps
+  )
 
-  const debouncedUrlChange = debounce(async (e) => {
-    const url = e.target.value.trim()
-    await updateEmbedHTML(url)
-    setUrl(url)
-  }, 500)
-
-  const updateEmbedHTML = async (url: string) => {
-    const oEmbedUrl = await getOEmbedUrl(url, 368, 217)
-    const oembedJSON = oEmbedUrl && (await getOEmbedHTML(oEmbedUrl, url))
-    setOEmbedHTML(oembedJSON)
-  }
+  const operation = pos ? 'Update' : 'Insert'
 
   return (
     <StyledModal isOpen={isOpen} onRequestClose={() => setOpen(false)}>
-      <DialogContainer>
+      <DialogContainer data-cy="media-editor">
         <HeaderContainer>{operation} external media</HeaderContainer>
 
         <MessageContainer>
@@ -142,7 +130,7 @@ export const InsertEmbedDialog: React.FC<InsertEmbedDialogProps> = ({
               autoFocus={true}
               required={true}
               placeholder={'https://youtube.com/...'}
-              onChange={debouncedUrlChange}
+              onChange={(e) => setUrl(e.target.value.trim())}
             />
           </Container>
           {url && allowedHref(url) && (
@@ -161,7 +149,10 @@ export const InsertEmbedDialog: React.FC<InsertEmbedDialogProps> = ({
           <SecondaryButton onClick={() => setOpen(false)}>
             Cancel
           </SecondaryButton>
-          <PrimaryButton onClick={action} disabled={!(url && allowedHref(url))}>
+          <PrimaryButton
+            onClick={handleSave}
+            disabled={!(url && allowedHref(url))}
+          >
             {operation}
           </PrimaryButton>
         </ButtonGroup>
@@ -206,11 +197,7 @@ export const NoPreviewMessageWithLink: React.FC<{ href: string }> = ({
   </NoPreviewContainer>
 )
 
-export const openEmbedDialog = (
-  view?: EditorView,
-  operation = 'Insert',
-  pos?: number
-) => {
+export const openEmbedDialog = (view?: EditorView, pos?: number) => {
   if (!view) {
     return
   }
@@ -222,7 +209,6 @@ export const openEmbedDialog = (
     {
       state,
       dispatch,
-      operation,
       pos,
     },
     state.doc,
