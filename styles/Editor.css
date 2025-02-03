@@ -969,8 +969,8 @@
 .delete-icon {
   position: absolute;
   right: -20px;
-  cursor: pointer;
-  z-index: 1;
+  cursor: pointer !important;
+  z-index: 4;
 }
 .delete-icon svg path {
   fill: #c9c9c9;
