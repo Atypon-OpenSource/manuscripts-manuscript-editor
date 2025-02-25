@@ -49,6 +49,7 @@ import {
 import { openEmbedDialog } from './components/toolbar/InsertEmbedDialog'
 import { openInsertTableDialog } from './components/toolbar/InsertTableDialog'
 import { ListMenuItem } from './components/toolbar/ListMenuItem'
+import { openInsertSpecialCharacterDialog } from './components/views/InsertSpecialCharacter'
 import {
   deleteClosestParentElement,
   findClosestParentElementNodeName,
@@ -327,6 +328,12 @@ export const getEditorMenus = (
         },
         isEnabled: isCommandValid(canInsert(schema.nodes.inline_footnote)),
         run: doCommand(insertInlineFootnote),
+      },
+      {
+        id: 'insert-special-character',
+        label: 'Special Characters',
+        isEnabled: isCommandValid(canInsert(schema.nodes.text)),
+        run: () => openInsertSpecialCharacterDialog(editor.view),
       },
       {
         id: 'insert-comment',

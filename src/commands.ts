@@ -207,7 +207,8 @@ export const canInsert =
     if (
       ($from.node().type === schema.nodes.title ||
         $from.node().type === schema.nodes.section_title) &&
-      $from.pos === $to.pos
+      $from.pos === $to.pos &&
+      type !== schema.nodes.text
     ) {
       return false
     }
