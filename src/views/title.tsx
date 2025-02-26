@@ -38,6 +38,9 @@ export class TitleView
     if (!this.node.childCount && attrs.placeholder) {
       this.contentDOM.setAttribute('data-placeholder', attrs.placeholder)
     }
+    if (attrs.type! === 'primary') {
+      this.contentDOM.setAttribute('type', attrs.type)
+    }
     this.dom.appendChild(this.contentDOM)
   }
 }

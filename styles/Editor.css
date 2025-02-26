@@ -16,7 +16,9 @@
 .ProseMirror.manuscript-editor[contenteditable='true'] {
   -webkit-user-modify: read-write-plaintext-only;
 }
-
+.ProseMirror .article-titles:not([type="primary"]) {
+  display: none;
+}
 .ProseMirror:focus {
   outline: none;
 }
