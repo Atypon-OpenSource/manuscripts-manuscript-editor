@@ -616,14 +616,6 @@ span.comment-marker {
   text-decoration: underline;
 }
 
-.ProseMirror .selected-suggestion .inserted,
-.ProseMirror .block-award.selected-suggestion span,
-.ProseMirror .selected-suggestion [data-track-op='insert'] .block,
-.ProseMirror .selected-suggestion .deleted {
-  background-color: var(--selected-pending-background-color) !important;
-  color: var(--common-color) !important;
-}
-
 .tracking-visible .ProseMirror .set_attrs,
 .tracking-visible .ProseMirror .block-award[data-track-op='set_attrs'] span {
   background: var(--updated-pending-bg-color);
@@ -719,9 +711,9 @@ figure .selected-suggestion {
 }
 
 .selected-suggestion[data-track-status='pending'] .block,
+.selected-suggestion [data-track-status='pending'] .block,
 .block:has(figure.selected-suggestion),
-figure.block:has(.equation.selected-suggestion)
- {
+figure.block:has(.equation.selected-suggestion) {
   box-shadow: inset 6px 0 0 black, inset 9px 0 0 lightgray;
   --fade-color: none;
 }
@@ -733,7 +725,7 @@ figure.block:has(.equation.selected-suggestion)
 }
 
 .tracking-visible .selected-suggestion[data-track-status='pending'][data-track-op='insert'] .block,
-.tracking-visible .selected-suggestion[data-track-status='pending'][data-track-op='insert'] .block,
+.tracking-visible .selected-suggestion [data-track-status='pending'][data-track-op='insert'] .block,
 .tracking-visible .selected-suggestion[data-track-op='wrap_with_node'][data-track-status='pending'] .block {
   box-shadow: inset 6px 0 0 var(--inserted-pending-color), inset 9px 0 0 var(--inserted-pending-bg-color) !important;
   animation: fadeOutBackground 3s forwards;

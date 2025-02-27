@@ -19,12 +19,8 @@ import {
   schema,
   SectionCategory,
 } from '@manuscripts/transform'
-import { ResolvedPos } from 'prosemirror-model'
 import { EditorState } from 'prosemirror-state'
-import {
-  findChildrenByType,
-  findParentNodeOfTypeClosestToPos,
-} from 'prosemirror-utils'
+import { findChildrenByType } from 'prosemirror-utils'
 import { Decoration, DecorationSet, EditorView } from 'prosemirror-view'
 
 import { EditorProps } from '../../configs/ManuscriptsEditor'
@@ -145,30 +141,27 @@ export function buildPluginState(
   const usedCategoryIDs = getUsedSectionCategoryIDs(state)
 
   state.doc.descendants((node, pos) => {
-    if (
-      node.type === schema.nodes.abstracts ||
-      node.type === schema.nodes.box_element
-    ) {
+    if (node.type === schema.nodes.box_element) {
       return false
     }
     if (isSectionNode(node)) {
       const categoryID = node.attrs.category
       const category = categories.get(categoryID)
-      const $pos = state.doc.resolve(pos)
-      const group = isInBackmatter($pos) ? 'backmatter' : 'body'
-      const groupCategories = getGroupCategories(categories, group)
-      decorations.push(
-        Decoration.widget(pos + 1, (view) =>
-          createButton(
-            view,
-            pos,
-            category,
-            groupCategories,
-            usedCategoryIDs,
-            can?.editArticle
+      if (category && category.group) {
+        const groupCategories = getGroupCategories(categories, category.group)
+        decorations.push(
+          Decoration.widget(pos + 1, (view) =>
+            createButton(
+              view,
+              pos,
+              category,
+              groupCategories,
+              usedCategoryIDs,
+              can?.editArticle
+            )
           )
         )
-      )
+      }
       return false
     }
   })
@@ -183,8 +176,4 @@ const getUsedSectionCategoryIDs = (state: EditorState): Set<string> => {
     node.attrs.category && used.add(node.attrs.category)
   })
   return used
-}
-
-const isInBackmatter = ($pos: ResolvedPos) => {
-  return !!findParentNodeOfTypeClosestToPos($pos, schema.nodes.backmatter)
 }
