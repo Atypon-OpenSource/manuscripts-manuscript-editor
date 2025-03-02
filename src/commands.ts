@@ -1748,3 +1748,82 @@ export const autoComplete = (
   }
   return false
 }
+export const canIndent = () => (state: ManuscriptEditorState) => {
+  const { $from } = state.selection
+  const nodeType = $from.node().type
+
+  // We should also add paragraph once the implementation done
+  const allowedNodeTypes = [schema.nodes.section_title]
+  if (!allowedNodeTypes.includes(nodeType)) {
+    return false
+  }
+
+  // Check if the selection is inside the body
+  const isBody = hasParentNodeOfType(schema.nodes.body)(state.selection)
+  if (!isBody) {
+    return false
+  }
+
+  return true
+}
+
+export const indent = () => (state: EditorState) => {
+  const { $from } = state.selection
+  const nodeType = $from.node().type
+  if (nodeType === schema.nodes.section_title) {
+    moveSectionToSubsection()
+  }
+}
+
+export const moveSectionToSubsection =
+  () => (state: EditorState, dispatch: Dispatch, view?: EditorView) => {
+    const {
+      selection: { $from },
+      schema,
+      tr,
+    } = state
+    const { nodes } = schema
+
+    const sectionDepth = $from.depth - 1
+    const section = $from.node(sectionDepth)
+    const beforeSection = $from.before(sectionDepth)
+    const afterSection = $from.after(sectionDepth)
+
+    const parentSectionDepth = sectionDepth - 1
+    const parentSection = $from.node(parentSectionDepth)
+    const startIndex = $from.index(parentSectionDepth)
+
+    const previousSection =
+      startIndex > 0 ? parentSection.child(startIndex - 1) : null
+    const isValidContainer = previousSection?.type === nodes.section
+
+    let anchor
+    if (!previousSection || !isValidContainer) {
+      // No valid previous section, creating new parent section
+      const emptyTitle = nodes.section_title.create()
+      const newParentSectionContent = Fragment.fromArray([emptyTitle, section])
+      const newParentSection = nodes.section.create({}, newParentSectionContent)
+
+      tr.replaceWith(beforeSection, afterSection, newParentSection)
+
+      anchor = beforeSection + 1
+    } else {
+      // Moving section into previous section as subsection
+      const newPreviousSection = previousSection.copy(
+        previousSection.content.append(Fragment.from(section))
+      )
+
+      const beforePreviousSection = beforeSection - previousSection.nodeSize
+
+      tr.replaceWith(beforePreviousSection, afterSection, newPreviousSection)
+
+      anchor = beforePreviousSection + 1
+    }
+
+    tr.setSelection(TextSelection.create(tr.doc, anchor))
+
+    dispatch(skipTracking(tr))
+    view && view.focus()
+
+    return true
+  }
