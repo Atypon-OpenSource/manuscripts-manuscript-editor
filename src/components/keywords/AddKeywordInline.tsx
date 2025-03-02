@@ -16,6 +16,7 @@
 import { Build, buildKeyword, Keyword } from '@manuscripts/json-schema'
 import { Category, Dialog, PlusIcon } from '@manuscripts/style-guide'
 import { ManuscriptEditorView, ManuscriptNode } from '@manuscripts/transform'
+import { TextSelection } from 'prosemirror-state'
 import React, {
   ChangeEvent,
   useCallback,
@@ -188,6 +189,11 @@ export const AddKeywordInline: React.FC<{
       <KeywordField
         value={newKeyword}
         onChange={handleInputChange}
+        onFocus={() =>
+          view.dispatch(
+            view.state.tr.setSelection(TextSelection.create(view.state.doc, 0))
+          )
+        }
         onKeyDown={(e) => {
           e.stopPropagation()
           if (e.key === 'Enter') {
