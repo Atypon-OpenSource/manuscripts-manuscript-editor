@@ -38,6 +38,7 @@ import styled from 'styled-components'
 
 import { findClosestParentElement } from '../../lib/hierarchy'
 import { nodeTypeIcon } from '../../node-type-icons'
+import { handleParagraphIndentOrMove } from './helpers'
 
 const optionName = (
   nodeType: ManuscriptNodeType,
@@ -124,52 +125,6 @@ const buildOptions = (
 
   const depth =
     findParentNodeOfType(schema.nodes.box_element)(state.selection)?.depth || 1
-
-  // move paragraph to title of new subsection, along with subsequent content
-  const moveParagraphToNewSubsection = () => {
-    const paragraph = $from.node($from.depth)
-    const beforeParagraph = $from.before($from.depth)
-    const afterParagraph = $from.after($from.depth)
-    const $afterParagraph = doc.resolve(afterParagraph)
-    const afterParagraphOffset = $afterParagraph.parentOffset
-
-    const sectionDepth = $from.depth - 1
-    const parentSection = $from.node(sectionDepth)
-    const endIndex = $from.indexAfter(sectionDepth)
-    const sectionEnd = $from.end(sectionDepth)
-
-    const textContent = paragraph.textContent
-
-    const sectionTitle: SectionTitleNode = textContent
-      ? nodes.section_title.create({}, schema.text(textContent))
-      : nodes.section_title.create()
-
-    let sectionContent = Fragment.from(sectionTitle)
-
-    if (endIndex < parentSection.childCount) {
-      sectionContent = sectionContent.append(
-        parentSection.content.cut(afterParagraphOffset)
-      )
-    }
-
-    const newSection = nodes.section.create(
-      {
-        id: generateNodeID(nodes.section),
-      },
-      sectionContent
-    )
-
-    tr.replaceWith(beforeParagraph, sectionEnd, newSection)
-
-    const anchor = beforeParagraph + 2
-
-    tr.setSelection(
-      TextSelection.create(tr.doc, anchor, anchor + sectionTitle.content.size)
-    )
-
-    dispatch(tr.scrollIntoView())
-    view && view.focus()
-  }
 
   // append the section to the preceding section as a subsection
   const moveSectionToSubsection = () => {
@@ -551,7 +506,7 @@ const buildOptions = (
           nodeType: nodes.section,
           value: parentSectionDepth + 1,
           depth: parentSectionDepth + 1,
-          action: moveParagraphToNewSubsection,
+          action: () => handleParagraphIndentOrMove(false),
         })
       )
 

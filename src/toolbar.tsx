@@ -20,6 +20,7 @@ import {
   ToolbarCitationIcon,
   ToolbarEquationIcon,
   ToolbarFigureIcon,
+  ToolbarIndentIcon,
   ToolbarItalicIcon,
   ToolbarOrderedListIcon,
   ToolbarSubscriptIcon,
@@ -37,6 +38,7 @@ import React, { ReactNode } from 'react'
 import {
   addInlineComment,
   blockActive,
+  canIndent,
   canInsert,
   Dispatch,
   insertBlock,
@@ -44,6 +46,7 @@ import {
   insertList,
   markActive,
 } from './commands'
+import { handleParagraphIndentOrMove } from './components/toolbar/helpers'
 import { openInsertTableDialog } from './components/toolbar/InsertTableDialog'
 
 export interface ToolbarButtonConfig {
@@ -68,6 +71,14 @@ export interface ToolbarConfig {
 }
 
 export const toolbar: ToolbarConfig = {
+  indentation: {
+    indent: {
+      title: 'Indent',
+      content: <ToolbarIndentIcon />,
+      isEnabled: canIndent(schema.nodes.paragraph),
+      run: handleParagraphIndentOrMove(true),
+    },
+  },
   style: {
     bold: {
       title: 'Toggle bold',

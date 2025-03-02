@@ -102,7 +102,7 @@ import {
   isNodeOfType,
   nearestAncestor,
 } from './lib/helpers'
-import { isDeleted } from './lib/track-changes-utils'
+import { isDeleted, isPendingInsert } from './lib/track-changes-utils'
 import {
   findParentNodeWithId,
   getChildOfType,
@@ -1748,3 +1748,40 @@ export const autoComplete = (
   }
   return false
 }
+
+// List of restricted node types that should not allow indentation
+// Add more restricted nodes here in the future as needed
+
+export const isIndentingAllowed = (type: NodeType) =>
+  type === schema.nodes.footnote || type === schema.nodes.general_table_footnote
+
+export const canIndent =
+  (type: ManuscriptNodeType) =>
+  (state: ManuscriptEditorState): boolean => {
+    const { $from, $to } = state.selection
+
+    const node = $from.node($from.depth)
+
+    //prevent indentation for frontmatter and backmatter sections
+    const isBody = hasParentNodeOfType(schema.nodes.body)(state.selection)
+
+    // Ensure selection is valid
+    if (!$from || !$to || !isBody || isDeleted(node) || isPendingInsert(node)) {
+      return false
+    }
+
+    // If the node type is "paragraph", check the parent node type
+    if (type === schema.nodes.paragraph) {
+      const parentNode = $from.node($from.depth - 1)
+
+      // If the parent node is restricted, prevent indentation
+      if (isIndentingAllowed(parentNode?.type)) {
+        return false
+      }
+    }
+
+    // Check if the selection is within the specified node type
+    const isTargetNode = $from.node().type === type
+
+    return isTargetNode
+  }
