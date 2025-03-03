@@ -20,6 +20,7 @@ import { findChildrenByType } from 'prosemirror-utils'
 import { Decoration, DecorationSet } from 'prosemirror-view'
 
 import { checkForCompletion } from './autocompletion'
+import { preventTitleEdit } from './edit-title'
 
 type NumberingArray = number[]
 export type PluginState = Map<string, string>
@@ -99,6 +100,9 @@ export default () => {
         }
         return oldSectionNumberMap
       },
+    },
+     filterTransaction: (tr, oldState) => {
+      return preventTitleEdit(tr, oldState)
     },
   })
 }

@@ -42,7 +42,6 @@ import placeholder from '../plugins/placeholder'
 import search_replace from '../plugins/search-replace'
 import section_title from '../plugins/section_title'
 import section_category from '../plugins/section-category'
-import sections from '../plugins/sections'
 import selected_suggestion from '../plugins/selected-suggestion'
 import table_editing_fix from '../plugins/tables-cursor-fix'
 import rules from '../rules'
@@ -65,7 +64,6 @@ export default (props: EditorProps) => {
     table_editing_fix(),
     elements(),
     persist(),
-    sections(),
     bibliography(props),
     objects(),
     affiliations(),
