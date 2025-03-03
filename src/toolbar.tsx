@@ -20,6 +20,7 @@ import {
   ToolbarCitationIcon,
   ToolbarEquationIcon,
   ToolbarFigureIcon,
+  ToolbarIndentIcon,
   ToolbarItalicIcon,
   ToolbarOrderedListIcon,
   ToolbarSubscriptIcon,
@@ -37,8 +38,10 @@ import React, { ReactNode } from 'react'
 import {
   addInlineComment,
   blockActive,
+  canIndent,
   canInsert,
   Dispatch,
+  indent,
   insertBlock,
   insertInlineCitation,
   insertList,
@@ -68,6 +71,14 @@ export interface ToolbarConfig {
 }
 
 export const toolbar: ToolbarConfig = {
+  indentation: {
+    indent: {
+      title: 'Indent',
+      content: <ToolbarIndentIcon />,
+      isEnabled: (state) => canIndent(state),
+      run: indent(),
+    },
+  },
   style: {
     bold: {
       title: 'Toggle bold',

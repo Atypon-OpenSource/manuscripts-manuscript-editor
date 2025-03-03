@@ -42,6 +42,7 @@ import {
   schema,
   SectionCategory,
   SectionNode,
+  SectionTitleNode,
   SupplementNode,
 } from '@manuscripts/transform'
 import {
@@ -1749,6 +1750,86 @@ export const autoComplete = (
   }
   return false
 }
+
+export const canIndent = (state: ManuscriptEditorState) => {
+  const { $from } = state.selection
+  const node = $from.node($from.depth)
+
+  // Allow paragraphs
+  const allowedNodeTypes = [schema.nodes.paragraph]
+  if (!allowedNodeTypes.includes(node.type)) {
+    return false
+  }
+
+  // Prevent indentation for frontmatter and backmatter sections
+  const isBody = hasParentNodeOfType(schema.nodes.body)(state.selection)
+  if (!isBody || isDeleted(node)) {
+    return false
+  }
+
+  if (node.type === schema.nodes.paragraph) {
+    const parentNode = $from.node($from.depth - 1)
+    // Allow indentation if the parent is a section or body (e.g., for orphan paragraphs like empty submissions)
+    if (
+      parentNode?.type !== schema.nodes.section &&
+      parentNode?.type !== schema.nodes.body
+    ) {
+      return false
+    }
+  }
+
+  return true
+}
+
+export const indent =
+  () => (state: EditorState, dispatch: Dispatch, view?: EditorView) => {
+    const { $from } = state.selection
+    const nodeType = $from.node().type
+    if (nodeType === schema.nodes.paragraph) {
+      indentParagraph()(state, dispatch, view)
+    }
+  }
+
+export const indentParagraph =
+  () =>
+  (
+    state: ManuscriptEditorState,
+    dispatch?: Dispatch,
+    view?: ManuscriptEditorView
+  ) => {
+    const { $from } = state.selection
+    const { schema, tr } = state
+
+    const beforeParagraph = $from.before($from.depth)
+    const sectionDepth = $from.depth - 1
+    const parentSection = $from.node(sectionDepth)
+    const sectionStart = $from.start(sectionDepth)
+    const sectionEnd = $from.end(sectionDepth)
+
+    const sectionTitle: SectionTitleNode = schema.nodes.section_title.create()
+
+    // Build section content
+    const sectionContent = Fragment.from(sectionTitle).append(
+      parentSection.content.cut(beforeParagraph - sectionStart)
+    )
+
+    // Create new section
+    const newSection = schema.nodes.section.create(
+      { id: generateNodeID(schema.nodes.section) },
+      sectionContent
+    )
+
+    // Replace original paragraph and moved nodes with the new section
+    tr.replaceWith(beforeParagraph, sectionEnd, newSection)
+
+    // Set selection inside the title of the new section
+    tr.setSelection(TextSelection.create(tr.doc, beforeParagraph + 2))
+
+    if (dispatch) {
+      dispatch(skipTracking(tr))
+      view?.focus()
+    }
+  }
 
 export const activateSearch = (
   state: ManuscriptEditorState,

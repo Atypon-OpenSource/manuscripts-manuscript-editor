@@ -22,16 +22,15 @@ import {
 } from '@manuscripts/transform'
 import { chainCommands } from 'prosemirror-commands'
 import { Fragment, ResolvedPos, Slice } from 'prosemirror-model'
-import { Selection, TextSelection, Transaction } from 'prosemirror-state'
+import { Selection, TextSelection } from 'prosemirror-state'
 
 import {
+  Dispatch,
   isAtEndOfTextBlock,
   isAtStartOfTextBlock,
   isTextSelection,
 } from '../commands'
 import { EditorAction } from '../types'
-
-type Dispatch = (transaction: Transaction) => void
 
 const insertParagraph = (
   dispatch: Dispatch,
